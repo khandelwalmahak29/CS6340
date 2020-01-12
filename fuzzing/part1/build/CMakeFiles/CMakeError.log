@@ -1,0 +1,34 @@
+Performing C SOURCE FILE Test C_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW failed with the following output:
+Change Dir: /home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_dc820/fast"
+/usr/bin/make -f CMakeFiles/cmTC_dc820.dir/build.make CMakeFiles/cmTC_dc820.dir/build
+make[1]: Entering directory '/home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_dc820.dir/src.c.o
+/usr/bin/cc   -fPIC -Werror=date-time -DC_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW   -Werror -Werror=unguarded-availability-new -o CMakeFiles/cmTC_dc820.dir/src.c.o   -c /home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp/src.c
+cc1: error: -Werror=unguarded-availability-new: no option -Wunguarded-availability-new
+CMakeFiles/cmTC_dc820.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_dc820.dir/src.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_dc820.dir/src.c.o] Error 1
+make[1]: Leaving directory '/home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_dc820/fast' failed
+make: *** [cmTC_dc820/fast] Error 2
+
+Source file was:
+int main(void) { return 0; }
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW failed with the following output:
+Change Dir: /home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c0770/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c0770.dir/build.make CMakeFiles/cmTC_c0770.dir/build
+make[1]: Entering directory '/home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_c0770.dir/src.cxx.o
+/usr/bin/c++    -fPIC -fvisibility-inlines-hidden -Werror=date-time -DCXX_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW   -Werror -Werror=unguarded-availability-new -o CMakeFiles/cmTC_c0770.dir/src.cxx.o -c /home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: error: -Werror=unguarded-availability-new: no option -Wunguarded-availability-new
+CMakeFiles/cmTC_c0770.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_c0770.dir/src.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_c0770.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/home/cs6340/fuzzing/fuzzing/part1/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_c0770/fast' failed
+make: *** [cmTC_c0770/fast] Error 2
+
+Source file was:
+int main() { return 0; }

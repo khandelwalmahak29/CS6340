@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -fPIC -Werror=date-time -w -ffunction-sections -fdata-sections  -Wl,-z,nodelete -shared  -o libruntime.so CMakeFiles/runtime.dir/lib/runtime.c.o  -L/usr/lib/llvm-8/lib 

@@ -28,38 +28,43 @@ bool toCampaign(std::string Str, Campaign& FuzzCampaign) {
  * Implement your mutation algorithms.
  */
 
-const std::string characters = "!@#$^&*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+//const std::string characters = "!@#$^&*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 std::random_device random_device;
 std::mt19937 generator(random_device());
-// std::uniform_int_distribution<> distribution(0, characters.size() - 1);
+std::uniform_int_distribution<> distribution(0, characters.size() - 1);
 
-char randomString() {
-  // return characters[distribution(generator)];
+static inline char randomString() {
   return rand() % 128;
 }
-std::string mutation1(std::string Origin) {
-    
 
+static inline char randomChar(){
+  return characters[distribution(generator)];
+}
+
+std::string mutation1(std::string& Origin, bool ignore) {
     std::string random_string;
-
     for (std::size_t i = 0; i < Origin.length(); ++i)
     {
-        Origin[i] = randomString();
-    }
+	if (ignore && (isspace(Origin[i]) || Origin[i] == ',' || Origin[i] == '.'))  continue;
 
+         Origin[i] = randomString();
+    }
     return Origin;
 }
 
-std::string mutation2(std::string s) {
+std::string mutation2(std::string& s) {
+    if (s.length() == 0) return s;
     int d = rand() % s.length();
     reverse(s.begin(), s.begin()+d); 
     reverse(s.begin()+d, s.end()); 
     reverse(s.begin(), s.end()); 
-
-    //std::cout <<"mutation2 called: " << d << " : " << s.length() << std::endl;
     return s;
 }
+
+/*
 std::string mutation3(std::string s) {
+    if (s.length() == 0) return s;
     int s1 = rand() % s.length();
     int s2 = rand() % s.length();
     std::swap(s[s1],s[s2]); 
@@ -67,69 +72,70 @@ std::string mutation3(std::string s) {
 }
 
 std::string mutation4(std::string s) {
+    if (s.length() == 0) return s;
     int s1 = rand() % s.length();
     int sLength = rand() % (s.length() - s1);
-    s.erase(s1,sLength);
+    s.erase(s1,sLength + 1);
     return s;
 }
-std::string mutation5(std::string s) {
-    int s1 = rand() % 1000;
+*/
+std::string mutation5(std::string& s) {
+    int s1 = rand() % 10;
     std::string inString;
-    for(int i = 0; i < s1; i++) {
+    for(int i = 0; i <= s1; i++) {
         inString += randomString();
     }
-    s.insert(s.length()-1,inString);
+    s +=inString;
     return s;
 }
-std::string mutateA(std::string Origin) {
-  //switch mutation cases
-  srand (time(NULL));
-  std::uniform_int_distribution<> distr(1, 100);
-  int selectedNum = distr(generator);
-  if(selectedNum > 0 && selectedNum < 20) {
-      Origin = mutation1(Origin);
-  }
-  else if(selectedNum > 19 && selectedNum < 40) {
-      Origin = mutation2(Origin);
-  }
-  else if(selectedNum > 39 && selectedNum < 60) {
-      Origin = mutation3(Origin);
-  }
-  else if(selectedNum > 59 && selectedNum < 80) {
-     Origin = mutation4(Origin);
-  }
-  else if(selectedNum > 79 && selectedNum < 101) {
-     Origin = mutation5(Origin);
-  }
-  //std::cout <<"selected Num: "<< selectedNum << std::endl;
-  return Origin;
+
+std::string mutation7(std::string& s) {
+    std::random_shuffle (s.begin(), s.end());
+    return s;
+}
+
+enum mutate_type {
+    m1,
+    m2,
+   // m3,
+ //   m4,
+    m5,
+    //m6,
+    last
+};
+
+std::string mutateA(std::string& Origin) {
+   srand (time(NULL)); 
+   mutate_type selected = static_cast<mutate_type>(rand() % (last - 1));
+   switch (selected) {
+   case m1:
+      return mutation1(Origin, true);
+   case m2:
+      return mutation2(Origin);
+   }
+   return Origin;
 }
 
 std::string mutateB(std::string Origin) {
-  //do every mutations
-  srand (time(NULL));
-  Origin = mutation1(Origin);
-  //std::cout <<"mutation1 output: "<< Origin << std::endl;
+  srand (time(NULL)); 
+//switch mutation cases
+   mutate_type selected = static_cast<mutate_type>(rand() % last);
+   switch (selected) {
+   case m1:
+      return mutation1(Origin, false);
+   case m2:
+      return mutation2(Origin);
+   case m5:
+      return mutation5(Origin);
+   }
 
-  Origin = mutation2(Origin);
-  //std::cout <<"mutation2 output: "<< Origin << std::endl;
-
-  Origin = mutation3(Origin);
-  //std::cout <<"mutation3 output: "<< Origin << std::endl;
-
-  Origin = mutation4(Origin);
-  //std::cout <<"mutation4 output: "<< Origin << std::endl;
-
-  Origin = mutation5(Origin);
   return Origin;
 }
 
 std::string mutateC(std::string Origin) {
-  //for 10 times
-  for(int i = 0 ; i < 10; i++){
-      Origin = mutateA(Origin);
-  }
-  return Origin;
+ //for 10 times
+  srand (time(NULL)); 
+  return mutation7(Origin);
 }
 
 std::string mutate(std::string Origin, Campaign& FuzzCampaign) {

@@ -75,9 +75,15 @@ int main(int argc, char **argv) {
   while (true) {
     for (auto i = 0; i < SeedInputs.size(); i++) {
       auto I = SeedInputs[i];
+
       std::string Mutant = mutate(I, FuzzCampaign);
+      //std::cout <<"Origin: " << I << std::endl;
+     // std::cout <<"MUtant: " << Mutant << std::endl;
+
       test(Target, Mutant, CampaignStr, OutDir);
       SeedInputs.push_back(Mutant);
+
+      //exit(0);
     }
   }
   return 0;

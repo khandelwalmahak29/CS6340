@@ -1,0 +1,6 @@
+S:S0,A0,B1,C-2,D1,t4
+A:A0,B1,C3,D6,t4
+B:B0,A4,C2,D5,t3
+C:C0,A2,B3,D3,t6
+D:D0,t10
+t:t0

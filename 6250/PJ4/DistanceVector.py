@@ -1,0 +1,143 @@
+# Project 4 for CS 6250: Computer Networks
+#
+# This defines a DistanceVector (specialization of the Node class)
+# that can run the Bellman-Ford algorithm. The TODOs are all related 
+# to implementing BF. Students should modify this file as necessary,
+# guided by the TODO comments and the assignment instructions. This 
+# is the only file that needs to be modified to complete the project.
+#
+# Student code should NOT access the following members, otherwise they may violate
+# the spirit of the project:
+#
+# topolink (parameter passed to initialization function)
+# self.topology (link to the greater topology structure used for message passing)
+#
+# Copyright 2017 Michael D. Brown
+# Based on prior work by Dave Lillethun, Sean Donovan, and Jeffrey Randow.
+        											
+from Node import *
+from helpers import *
+import sys
+class DistanceVector(Node):
+    
+    def __init__(self, name, topolink, outgoing_links, incoming_links):
+        ''' Constructor. This is run once when the DistanceVector object is
+        created at the beginning of the simulation. Initializing data structure(s)
+        specific to a DV node is done here.'''
+
+        super(DistanceVector, self).__init__(name, topolink, outgoing_links, incoming_links)
+        
+        #TODO: Create any necessary data structure(s) to contain the Node's internal state / distance vector data    
+        self.vector = {name: 0}
+        
+    def send_initial_messages(self):
+        ''' This is run once at the beginning of the simulation, after all
+        DistanceVector objects are created and their links to each other are
+        established, but before any of the rest of the simulation begins. You
+        can have nodes send out their initial DV advertisements here. 
+
+        Remember that links points to a list of Neighbor data structure.  Access
+        the elements with .name or .weight '''
+
+        # TODO - Each node needs to build a message and send it to each of its neighbors
+        # HINT: Take a look at the skeleton methods provided for you in Node.py
+        for link in self.incoming_links:
+            # print("send message: ",link.name,self.name)
+            message = {"source": self.name, "vector": self.vector.copy(),"dest": link}
+            
+            self.send_msg(message, link.name)
+
+    def getOldWeight(self, targetNode):
+        if targetNode in self.vector:
+           return self.vector[targetNode]
+        else:
+            return sys.maxint
+    def getNewWeight(self,selftoSource,sourceWeight):
+        if selftoSource == -99:
+            return -99
+        else:
+            return selftoSource + sourceWeight
+    def check_if_node_in_graph(self,node):
+        # TODO: BADTopo
+        return True
+    def process_BF(self):
+        ''' This is run continuously (repeatedly) during the simulation. DV
+        messages from other nodes are received here, processed, and any new DV
+        messages that need to be sent to other nodes as a result are sent. '''
+
+        # Implement the Bellman-Ford algorithm here.  It must accomplish two tasks below:
+        # TODO 1. Process queued messages 
+      
+        for msg in self.messages: 
+            # print(msg["source"],msg["dest"]) 
+            currentNode = self.name
+            midNode = msg["source"]
+            midNodeVector = msg["vector"]
+            updated = False
+            for targetNode in midNodeVector:
+                # if !self.check_if_node_in_graph(targetNode):
+                #     continue
+                if targetNode == self.name:
+                    continue
+                oldWeight = self.getOldWeight(targetNode)
+                midNodeToTarget = int(midNodeVector[targetNode])
+                currentToMidWeight = int(self.get_outgoing_neighbor_weight(midNode))
+                newWeight = self.getNewWeight(midNodeToTarget,currentToMidWeight)
+               
+                if oldWeight <= newWeight:
+                    continue
+                if oldWeight == -99:
+                    continue
+
+                self.vector[targetNode] = max(-99,newWeight)
+                updated = True
+
+            if updated:     
+                for link in self.incoming_links:
+                    #print(link.weight)
+                    message = {"source": self.name, "vector": self.vector.copy(),"dest": link}
+                    self.send_msg(message, link.name)
+    
+        # Empty queue
+        self.messages = []
+
+
+        # TODO 2. Send neighbors updated distances               
+        # if updated:
+        #     self.send_messages_to_incoming()
+
+    def log_distances(self):
+        ''' This function is called immedately after process_BF each round.  It 
+        prints distances to the console and the log file in the following format (no whitespace either end):
+        
+        A:A0,B1,C2
+        
+        Where:
+        A is the node currently doing the logging (self),
+        B and C are neighbors, with vector weights 1 and 2 respectively
+        NOTE: A0 shows that the distance to self is 0 '''
+        
+        # TODO: Use the provided helper function add_entry() to accomplish this task (see helpers.py).
+        # An example call that which prints the format example text above (hardcoded) is provided.        
+        seperator = ','
+        texts = []
+        for key in self.vector:
+            texts.append(key + str(self.vector[key]))
+        texts.sort()
+        add_entry(self.name,seperator.join(texts))        
+    # # check if it is a outgoing neighbor
+    # def check_if_outgoing_neighbor(self,node_name):
+    #     for link in self.outgoing_links:
+    #         if node_name == link.name:
+    #             return True
+
+    # send message to the incoming links
+    def send_messages_to_incoming(self):
+        for link in self.incoming_links:
+            #print(link.weight)
+            message = {"source": self.name, "vector": self.vector.copy(),"dest": link}
+            self.send_msg(message, link.name)
+           
+                    
+            
+            
